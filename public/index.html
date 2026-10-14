@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScamSense AI - Explainable Scam Detection for Students & Families</title>
+  <meta name="description" content="Explainable scam detection web application for students, freshers, and families. Analyzes suspicious SMS, emails, job offers, scholarships, and payment requests locally with transparent evidence-based reasoning.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <a href="/" class="brand-wrapper" aria-label="ScamSense AI Home">
+        <div class="brand-logo-icon" aria-hidden="true">🛡️</div>
+        <div>
+          <div class="brand-title">ScamSense <span class="accent">AI</span></div>
+          <div class="brand-tagline">Explainable Security & Scam Analysis</div>
+        </div>
+      </a>
+
+      <div class="header-status-badge" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>Local Heuristic Engine (Demo Mode)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content" class="container">
+    <!-- Hero Header -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-pill">Hackathon MVP • Trust & Safety</div>
+      <h1 id="hero-title" class="hero-title">Explainable Scam Detection for Students & Families</h1>
+      <p class="hero-subtitle">
+        Paste any suspicious internship offer, scholarship message, KYC notice, or payment request. 
+        Get transparent risk assessment with exact suspicious phrases and safe next steps.
+      </p>
+
+      <!-- Navigation Tabs -->
+      <nav class="tabs-navigation" role="tablist" aria-label="Analysis Modes">
+        <button id="tab-btn-single" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-single" tabindex="0">
+          🔍 Single Message Inspector
+        </button>
+        <button id="tab-btn-compare" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-compare" tabindex="-1">
+          ⚖️ Comparison Mode (A vs B)
+        </button>
+        <button id="tab-btn-guide" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-guide" tabindex="-1">
+          📖 Threat Guide & Helplines
+        </button>
+      </nav>
+    </section>
+
+    <!-- TAB 1: Single Message Inspector -->
+    <section id="tab-single" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-single">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon" aria-hidden="true">📩</div>
+            <div>
+              <h2 class="card-title">Analyze Suspicious Message</h2>
+              <p class="card-subtitle">Paste SMS, WhatsApp text, email, or offer letters to check for threat indicators</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo Presets Bar -->
+        <div class="presets-container" aria-label="Demo Message Presets">
+          <div class="presets-label">
+            <span>✨ Click to load realistic demo presets:</span>
+          </div>
+          <div class="presets-grid" id="presets-grid">
+            <!-- Dynamically populated or static fallbacks -->
+            <button type="button" class="preset-chip" data-preset="demo-internship-scam">
+              <span class="dot danger"></span> Google Internship Fee Scam
+            </button>
+            <button type="button" class="preset-chip" data-preset="demo-scholarship-fraud">
+              <span class="dot danger"></span> Scholarship Disbursement Fee
+            </button>
+            <button type="button" class="preset-chip" data-preset="demo-kyc-suspension">
+              <span class="dot danger"></span> Bank / KYC Suspension Alert
+            </button>
+            <button type="button" class="preset-chip" data-preset="demo-task-fraud">
+              <span class="dot warning"></span> Telegram Part-Time Task
+            </button>
+            <button type="button" class="preset-chip" data-preset="demo-legit-campus-placement">
+              <span class="dot safe"></span> Legitimate Campus Placement
+            </button>
+            <button type="button" class="preset-chip" data-preset="demo-legit-delivery-alert">
+              <span class="dot safe"></span> Legitimate Delivery Alert
+            </button>
+          </div>
+        </div>
+
+        <!-- Input Mode Switcher (Text vs Screenshot OCR) -->
+        <div class="input-mode-switcher" role="tablist" aria-label="Input Method">
+          <button type="button" id="mode-text-btn" class="mode-btn active" role="tab" aria-selected="true" aria-controls="input-wrapper-text">
+            📝 Paste Text Message
+          </button>
+          <button type="button" id="mode-image-btn" class="mode-btn" role="tab" aria-selected="false" aria-controls="input-wrapper-image">
+            📸 Upload Screenshot / Image (OCR)
+          </button>
+        </div>
+
+        <!-- Inline Error Banner -->
+        <div id="validation-banner" class="alert-banner error" style="display: none;" role="alert">
+          <span aria-hidden="true">⚠️</span>
+          <span id="validation-message">Please enter or paste a message to analyze.</span>
+        </div>
+
+        <!-- Mode 1: Text Input Wrapper -->
+        <div id="input-wrapper-text" class="input-wrapper">
+          <label for="message-input" class="visually-hidden" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0);">Paste suspicious message text here</label>
+          <textarea 
+            id="message-input" 
+            class="message-textarea" 
+            placeholder="Paste suspicious SMS, email, internship offer letter, scholarship notice, or payment message here...&#10;&#10;Tip: Press Ctrl + Enter to analyze quickly."
+            rows="7"
+            aria-describedby="char-count"
+          ></textarea>
+          
+          <div class="textarea-footer">
+            <div class="textarea-stats">
+              <span id="char-count">0 characters</span>
+              <span id="word-count">0 words</span>
+            </div>
+            <div class="textarea-actions">
+              <button type="button" id="btn-paste-clip" class="btn-secondary" title="Paste from Clipboard">
+                📋 Paste
+              </button>
+              <button type="button" id="btn-clear-input" class="btn-secondary" title="Clear Text Area">
+                ✕ Clear
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode 2: Image Upload Dropzone & Preview Wrapper -->
+        <div id="input-wrapper-image" class="image-upload-wrapper">
+          <!-- Dropzone -->
+          <div id="image-dropzone" class="image-dropzone" tabindex="0" role="button" aria-label="Click or drag and drop a screenshot here">
+            <div class="dropzone-icon" aria-hidden="true">🖼️</div>
+            <div class="dropzone-title">Upload Screenshot of Message or Offer</div>
+            <div class="dropzone-subtitle">Click to browse files, or drag & drop a screenshot here</div>
+            <div class="dropzone-limits">Supports PNG, JPG, JPEG (Max 5 MB) • Processed in-memory without saving</div>
+            <input type="file" id="image-file-input" accept=".png,.jpg,.jpeg,image/png,image/jpeg" style="display: none;" aria-hidden="true">
+          </div>
+
+          <!-- Preview Card (shown when an image is selected) -->
+          <div id="image-preview-card" class="image-preview-card" style="display: none;">
+            <img id="image-preview-thumb" class="preview-thumbnail" alt="Selected screenshot preview">
+            <div class="preview-details">
+              <div>
+                <div id="image-preview-name" class="preview-name">screenshot.png</div>
+                <div id="image-preview-size" class="preview-size">142 KB</div>
+              </div>
+              <button type="button" id="btn-remove-image" class="btn-remove-image" aria-label="Remove Selected Image">
+                ✕ Remove Image
+              </button>
+            </div>
+            <div style="font-size: 0.78rem; color: #38bdf8; width: 100%; text-align: left;">
+              ℹ️ OCR will extract text from this screenshot and run explainable scam detection in-memory.
+            </div>
+          </div>
+        </div>
+
+        <!-- Analyze Button -->
+        <button type="button" id="btn-analyze" class="btn-primary" aria-label="Analyze Message for Scam Indicators">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="btn-analyze-text" class="btn-text">🛡️ Analyze Message</span>
+        </button>
+      </div>
+
+      <!-- Analysis Results Section -->
+      <section id="results-section" class="results-container" aria-live="polite" aria-labelledby="results-heading">
+        <h2 id="results-heading" class="visually-hidden" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0);">Analysis Results</h2>
+        
+        <!-- Risk Assessment Banner Card -->
+        <div id="risk-card" class="risk-card risk-high">
+          <!-- Circular Score Gauge -->
+          <div class="gauge-wrapper" aria-hidden="true">
+            <svg class="gauge-svg" viewBox="0 0 100 100">
+              <circle class="gauge-track" cx="50" cy="50" r="40" />
+              <circle id="gauge-fill" class="gauge-fill" cx="50" cy="50" r="40" stroke="#f43f5e" />
+            </svg>
+            <div class="gauge-content">
+              <div id="gauge-number" class="gauge-number">85</div>
+              <div class="gauge-label">Risk Score</div>
+            </div>
+          </div>
+
+          <!-- Risk Category & Summary -->
+          <div class="risk-header-info">
+            <div id="risk-badge" class="risk-category-badge">
+              <span id="risk-icon" aria-hidden="true">🚨</span>
+              <span id="risk-category-text">High Risk</span>
+            </div>
+            <p id="risk-summary-text" class="risk-summary-text">
+              Multiple critical indicators of fraud or extortion detected.
+            </p>
+            <div class="risk-metrics-pill-group">
+              <span id="metric-findings" class="metric-pill">4 Red Flags</span>
+              <span id="metric-protective" class="metric-pill">0 Protective Signals</span>
+              <span id="metric-time" class="metric-pill">Analyzed in 4ms</span>
+            </div>
+          </div>
+
+          <!-- Quick Action Tag -->
+          <div>
+            <button type="button" id="btn-jump-nextsteps" class="btn-secondary" style="white-space: nowrap;">
+              ⬇️ Safe Next Steps
+            </button>
+          </div>
+        </div>
+
+        <!-- Evidence and Next Steps Grid -->
+        <div class="results-grid">
+          <!-- Left Column: Highlighted Message & Red Flags Breakdown -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <div class="card-icon" aria-hidden="true">🔍</div>
+                <div>
+                  <h3 class="card-title">Evidence-Based Explanations</h3>
+                  <p class="card-subtitle">Exact suspicious phrases detected in context</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- OCR Extracted Text Preview (Visible when analysis was triggered from an image) -->
+            <div id="ocr-extracted-banner" class="ocr-extracted-banner" style="display: none;">
+              <div class="ocr-banner-header">
+                <div class="ocr-badge">
+                  <span>📸 Extracted from Screenshot via OCR</span>
+                  <span id="ocr-confidence-pill" class="metric-pill">Confidence: --%</span>
+                </div>
+                <button type="button" id="btn-copy-ocr-text" class="btn-secondary" style="font-size: 0.75rem;">
+                  📋 Copy to Textarea
+                </button>
+              </div>
+              <div id="ocr-extracted-preview" class="ocr-extracted-preview"></div>
+            </div>
+
+            <!-- Highlighted Original Text -->
+            <div class="highlight-viewer" id="highlight-viewer" tabindex="0" aria-label="Original Message with Highlighted Red Flags">
+              <!-- Rendered with highlighted marks -->
+            </div>
+
+            <!-- Detected Findings Details -->
+            <div id="findings-container" class="findings-list" aria-label="Detailed findings breakdown">
+              <!-- Dynamically populated findings cards -->
+            </div>
+
+            <!-- Protective Signals Box (if present) -->
+            <div id="protective-box" class="protective-box" style="display: none;">
+              <div class="protective-title">
+                <span>🛡️ Protective Signals Detected</span>
+              </div>
+              <ul id="protective-list">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Right Column: Safe Next Steps & Action Plan -->
+          <div class="card" id="next-steps-section">
+            <div class="card-header">
+              <div class="card-title-group">
+                <div class="card-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;" aria-hidden="true">✅</div>
+                <div>
+                  <h3 class="card-title">Safe Next Steps</h3>
+                  <p class="card-subtitle">Recommended defensive actions based on detected warning signs</p>
+                </div>
+              </div>
+            </div>
+
+            <div id="next-steps-container" class="next-steps-list">
+              <!-- Dynamically populated steps -->
+            </div>
+
+            <!-- Direct Helplines Box -->
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: var(--radius-md);">
+              <h4 style="font-size: 0.88rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.5rem;">
+                🚨 Official Incident Reporting Channels
+              </h4>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 0.75rem;">
+                If you lost money or shared confidential credentials, act within the golden hour:
+              </p>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <span style="font-size: 0.75rem; background: #090e1a; padding: 0.3rem 0.6rem; border-radius: 4px; color: #f8fafc;">
+                  📞 National Cyber Helpline: <strong>1930</strong>
+                </span>
+                <span style="font-size: 0.75rem; background: #090e1a; padding: 0.3rem 0.6rem; border-radius: 4px; color: #f8fafc;">
+                  🌐 Portal: <strong>cybercrime.gov.in</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transparent Engine & Privacy Safeguards Banner -->
+        <div class="transparency-banner" role="region" aria-label="Engine Transparency Details">
+          <div class="transparency-left">
+            <span class="shield-icon" aria-hidden="true">🔒</span>
+            <div>
+              <strong>Analysis Mode:</strong> <span id="engine-mode-text">Transparent Rule-Based Heuristic (Demo Mode)</span>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">
+                100% private in-memory evaluation. No messages stored. No external AI keys exposed.
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 0.75rem; color: #38bdf8; font-family: var(--font-mono);">
+            Zero Data Retention Guarantee
+          </div>
+        </div>
+
+        <p class="disclaimer-text">
+          ⚠️ <strong>Disclaimer:</strong> This automated risk assessment is an educational advisory tool and does not constitute definitive proof of fraud or legitimacy. Scammers continually change phrasing. Always independently verify suspicious requests directly through official websites or university placement authorities.
+        </p>
+      </section>
+    </section>
+
+    <!-- TAB 2: Comparison Mode (Side-by-Side) -->
+    <section id="tab-compare" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-compare">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon" aria-hidden="true">⚖️</div>
+            <div>
+              <h2 class="card-title">Side-by-Side Message Comparator</h2>
+              <p class="card-subtitle">Compare two messages to evaluate threat indicators, safe signals, and relative risk</p>
+            </div>
+          </div>
+          <button type="button" id="btn-load-demo-comparison" class="btn-secondary">
+            ✨ Load Example: Fake Offer vs Legitimate Notice
+          </button>
+        </div>
+
+        <!-- Comparison Error Banner -->
+        <div id="compare-validation-banner" class="alert-banner error" style="display: none;" role="alert">
+          <span aria-hidden="true">⚠️</span>
+          <span id="compare-validation-message">Please provide text in both message fields to compare.</span>
+        </div>
+
+        <!-- Two Columns Textareas -->
+        <div class="comparison-grid">
+          <!-- Message A -->
+          <div>
+            <div class="comparison-col-header">
+              <label for="compare-input-a" style="font-weight: 700; font-size: 0.95rem;">Message A</label>
+              <span class="col-badge badge-a">First Message</span>
+            </div>
+            <textarea 
+              id="compare-input-a" 
+              class="message-textarea" 
+              style="min-height: 160px;" 
+              placeholder="Paste first message snippet (e.g., suspicious internship offer)..."
+            ></textarea>
+          </div>
+
+          <!-- Message B -->
+          <div>
+            <div class="comparison-col-header">
+              <label for="compare-input-b" style="font-weight: 700; font-size: 0.95rem;">Message B</label>
+              <span class="col-badge badge-b">Second Message</span>
+            </div>
+            <textarea 
+              id="compare-input-b" 
+              class="message-textarea" 
+              style="min-height: 160px;" 
+              placeholder="Paste second message snippet (e.g., genuine company notice)..."
+            ></textarea>
+          </div>
+        </div>
+
+        <button type="button" id="btn-run-compare" class="btn-primary" aria-label="Compare Both Messages">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="btn-text">⚖️ Compare Messages Side-by-Side</span>
+        </button>
+
+        <!-- Comparison Result Output -->
+        <div id="comparison-results" class="comparison-result-card" style="display: none;">
+          <div class="comparison-verdict-box">
+            <div id="verdict-title" class="verdict-title">
+              <span>🏆 Comparative Verdict</span>
+            </div>
+            <p id="verdict-description" class="verdict-text"></p>
+          </div>
+
+          <!-- Side-by-Side Assessment Details -->
+          <div class="comparison-side-by-side">
+            <!-- Message A Details -->
+            <div id="comp-card-a" class="comp-summary-card rose">
+              <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Message A Summary</h3>
+              <div id="comp-score-a" style="font-size: 1.3rem; font-weight: 800; color: #f43f5e; margin-bottom: 0.5rem;">Score: 85 (High Risk)</div>
+              <ul id="comp-findings-a" style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; padding-left: 1.2rem;"></ul>
+            </div>
+
+            <!-- Message B Details -->
+            <div id="comp-card-b" class="comp-summary-card emerald">
+              <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;">Message B Summary</h3>
+              <div id="comp-score-b" style="font-size: 1.3rem; font-weight: 800; color: #34d399; margin-bottom: 0.5rem;">Score: 10 (Lower Concern)</div>
+              <ul id="comp-findings-b" style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; padding-left: 1.2rem;"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Threat Knowledge & Student Protection Guide -->
+    <section id="tab-guide" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-guide">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc;" aria-hidden="true">💡</div>
+            <div>
+              <h2 class="card-title">Student & Family Scam Defense Guide</h2>
+              <p class="card-subtitle">Key rules to identify and neutralize scams targeting students and fresh graduates</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-grid">
+          <!-- Guide 1: Internship Fee Scams -->
+          <div class="guide-card">
+            <h3>🎓 1. Internship & Job Offer Scams</h3>
+            <p>
+              Scammers send fake offer letters using brand names (Google, Microsoft, Amazon) demanding "laptop security deposits" or "training kit charges".
+            </p>
+            <ul class="guide-dos-donts">
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Demanding refundable registration fee or laptop caution deposit via UPI.</li>
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Recruiter contacting from a personal @gmail.com address or Telegram.</li>
+              <li class="safe-practice">✔️ <strong>Rule:</strong> Legitimate companies never charge candidates. Verify with your campus placement cell.</li>
+            </ul>
+          </div>
+
+          <!-- Guide 2: Fake Scholarships -->
+          <div class="guide-card">
+            <h3>📜 2. Advance-Fee Scholarship Scams</h3>
+            <p>
+              Fraudulent schemes inform students they won merit grants, requiring an upfront "clearance fee" or "disbursement code charge".
+            </p>
+            <ul class="guide-dos-donts">
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Paying ₹500–₹1,500 to "activate" a ₹50,000 scholarship.</li>
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Demanding Aadhaar and bank passbook photos over WhatsApp.</li>
+              <li class="safe-practice">✔️ <strong>Rule:</strong> Authentic scholarships are listed on official portals (e.g. scholarships.gov.in) and never require payment.</li>
+            </ul>
+          </div>
+
+          <!-- Guide 3: Digital Arrest & Legal Intimidation -->
+          <div class="guide-card">
+            <h3>⚖️ 3. "Digital Arrest" & Police Threat</h3>
+            <p>
+              Imposters posing as Police, CBI, or Customs claim an illegal parcel was found in your name and demand a money transfer to avoid arrest.
+            </p>
+            <ul class="guide-dos-donts">
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Video calling on Skype claiming you are under "digital arrest".</li>
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Demanding immediate funds transfer to a "Supreme Court verification account".</li>
+              <li class="safe-practice">✔️ <strong>Rule:</strong> There is no legal procedure called "digital arrest". Hang up immediately and dial 1930.</li>
+            </ul>
+          </div>
+
+          <!-- Guide 4: UPI Reversal & Part-Time Task Scams -->
+          <div class="guide-card">
+            <h3>📲 4. UPI Reversal & Task Fraud</h3>
+            <p>
+              Deceptive prompts claiming you won cashback or part-time tasks paying ₹5,000/day for liking YouTube videos.
+            </p>
+            <ul class="guide-dos-donts">
+              <li class="red-flag">❌ <strong>Red Flag:</strong> "Enter your UPI PIN to receive money in your account".</li>
+              <li class="red-flag">❌ <strong>Red Flag:</strong> Joining Telegram channels with "prepaid merchant tasks".</li>
+              <li class="safe-practice">✔️ <strong>Rule:</strong> You NEVER enter a PIN to receive money. PIN is exclusively for authorizing deductions.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="helplines-box" aria-label="Emergency Helplines">
+        <a href="tel:1930" class="helpline-chip">📞 National Cyber Crime Helpline: 1930</a>
+        <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" class="helpline-chip">🌐 cybercrime.gov.in</a>
+        <a href="https://scholarships.gov.in" target="_blank" rel="noopener noreferrer" class="helpline-chip">🎓 National Scholarship Portal</a>
+      </div>
+
+      <p>
+        <strong>ScamSense AI</strong> — Hackathon MVP for Explainable Threat Detection. 
+        Engineered with local privacy-preserving heuristic evaluation.
+      </p>
+
+      <p style="font-size: 0.75rem; color: var(--text-muted);">
+        Notice: No personal data, passwords, or messages are persisted to any database. All analyses execute in-memory.
+      </p>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
